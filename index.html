@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Lousa Interativa — Pinguim</title>
+<link rel="preconnect" href="https://api.duckduckgo.com">
+<style>
+  :root{
+    --accent:#6a1b9a;
+    --wood:#5d4037;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    min-height:100vh;
+    font-family: "Segoe UI", Roboto, Arial, sans-serif;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background: linear-gradient(135deg,#BEE9FF,#E9D9F8);
+    padding:20px;
+    color:#222;
+  }
+
+  .wrap{
+    width:100%;
+    max-width:1200px;
+    display:flex;
+    gap:18px;
+    align-items:flex-start;
+  }
+
+  /* LOUSA */
+  .lousa-wrap{
+    flex:1.1;
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+  }
+
+  .lousa-header{
+    display:flex;
+    gap:10px;
+    align-items:center;
+    font-weight:700;
+    font-size:18px;
+    color:#222;
+  }
+
+  .lousa-sub{
+    font-size:13px;
+    color:rgba(0,0,0,0.7);
+  }
+
+  .lousa {
+    background-color: #fff;  /* fundo branco */
+    color: #000;             /* texto preto */
+    min-height:220px;
+    max-height:360px;
+    overflow:auto;
+    font-size:16px;
+    line-height:1.5;
+    border:12px solid var(--wood);
+    border-radius:10px;
+    padding:14px;
+    box-shadow:0 6px 18px rgba(0,0,0,0.18);
+  }
+
+  .lousa .source{
+    font-size:12px;
+    opacity:0.8;
+    margin-top:8px;
+  }
+
+  .input-area{
+    display:flex;
+    gap:8px;
+    align-items:center;
+  }
+
+  .input-area input{
+    flex:1;
+    padding:10px 12px;
+    border-radius:10px;
+    border:2px solid #ccc;
+    background:#fff;
+    color:#000;
+    outline:none;
+    font-size:15px;
+  }
+
+  .input-area button{
+    padding:10px 14px;
+    background:var(--accent);
+    color:white;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+    font-weight:600;
+  }
+
+  /* CENTRO (IMAGEM) */
+  .centro{
+    width:260px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-direction:column;
+    gap:8px;
+  }
+
+  .centro img{
+    width:220px;
+    height:auto;
+    border-radius:16px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.2);
+    background: transparent;
+    padding:6px;
+    animation: float 3s ease-in-out infinite;
+  }
+
+  .centro .caption{
+    font-size:13px;
+    color:#222;
+    opacity:0.85;
+    text-align:center;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-15px); }
+  }
+
+  /* PAPEIS */
+  .papeis{
+    flex:0.9;
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+    align-items:center;
+  }
+
+  .papel{
+    width:220px;
+    background:#fffbe6;
+    padding:12px;
+    border-radius:8px;
+    border:1px solid #e2d6b7;
+    box-shadow: 0 6px 12px rgba(0,0,0,0.12);
+    position:relative;
+    font-size:15px;
+  }
+
+  .papel::before{
+    content:"";
+    position:absolute;
+    top:-10px;
+    left:50%;
+    transform:translateX(-50%) rotate(-6deg);
+    width:86px;
+    height:18px;
+    background: linear-gradient(90deg,#f7eecb,#f1e5b8);
+    border-radius:3px;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.12);
+    border:1px solid rgba(0,0,0,0.06);
+  }
+
+  .papel b{display:block;margin-bottom:8px;color:#433d3d}
+  .papel a{
+    color:var(--accent);
+    font-weight:700;
+    text-decoration:none;
+  }
+  .papel small{display:block;margin-top:8px;color:#666;font-size:12px}
+
+  /* responsivo */
+  @media(max-width:900px){
+    .wrap{flex-direction:column;align-items:center}
+    .centro{order:-1}
+    .papeis{flex-direction:row;gap:10px;flex-wrap:wrap;justify-content:center}
+    .lousa{max-height:280px}
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <!-- Lousa esquerda -->
+  <div class="lousa-wrap">
+    <div class="lousa-header">
+      Lousa <span class="lousa-sub">(explanação do tema)</span>
+    </div>
+    <div id="lousa" class="lousa">
+      <div id="lousa-content">Digite um tema no campo abaixo e clique em "Buscar".</div>
+      <div id="lousa-source" class="source"></div>
+    </div>
+
+    <div class="input-area">
+      <input id="temaInput" type="text" placeholder="Ex: frações, fotossíntese, Segunda Guerra Mundial..." />
+      <button id="buscarBtn">Buscar</button>
+    </div>
+  </div>
+
+
+
+  <!-- Papéis à direita -->
+  <div class="papeis">
+    <div class="papel" id="papel1">
+      <b>Jogos do Wordwall 2.0</b>
+      <div style="margin-top:6px">Encontre jogos sobre o tema: <a id="linkWordwall" href="#" target="_blank">clique aqui</a></div>
+      <small>Dica: abre em nova aba</small>
+    </div>
+
+    <div class="papel" id="papel2">
+      <b>Vídeos</b>
+      <div style="margin-top:6px">Assista vídeos sobre o tema: <a id="linkYoutube" href="#" target="_blank">clique aqui</a></div>
+      <small>Procura por resultados do YouTube</small>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const OPENROUTER_KEY = "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";
+const buscarBtn = document.getElementById('buscarBtn');
+const temaInput = document.getElementById('temaInput');
+const lousaContent = document.getElementById('lousa-content');
+const lousaSource = document.getElementById('lousa-source');
+const linkWordwall = document.getElementById('linkWordwall');
+const linkYoutube = document.getElementById('linkYoutube');
+
+async function buscarTema(){
+  const tema = temaInput.value.replace(/\s+/g,' ').trim();
+  if(!tema) return;
+  lousaContent.textContent = "Buscando explicação sobre \"" + tema + "\" ...";
+  lousaSource.textContent = "";
+
+  const temaQuery = encodeURIComponent(tema);
+  linkWordwall.href = `https://wordwall.net/br/search?query=${temaQuery}`;
+  linkYoutube.href = `https://www.youtube.com/results?search_query=${temaQuery}`;
+
+  if(OPENROUTER_KEY && OPENROUTER_KEY !== "COLE_SUA_CHAVE_AQUI"){
+    try {
+      const r = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type":"application/json",
+          "Authorization": `Bearer ${OPENROUTER_KEY}`
+        },
+        body: JSON.stringify({
+          model: "openai/gpt-4o-mini",
+          messages: [{role:"user", content:`Explique de forma simples o tema: ${tema}`}],
+          max_tokens: 300
+        })
+      });
+
+      if(!r.ok) throw new Error("OpenRouter retornou não-ok: " + r.status);
+
+      const data = await r.json();
+      let texto = "";
+      if(data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content){
+        texto = data.choices[0].message.content;
+      } else if(data.choices && data.choices[0] && data.choices[0].text){
+        texto = data.choices[0].text;
+      } else {
+        texto = JSON.stringify(data);
+      }
+
+      lousaContent.textContent = texto;
+      lousaSource.textContent = "Fonte: OpenRouter";
+      return;
+    } catch(err){
+      console.warn("OpenRouter falhou, usando fallback DuckDuckGo. Erro:", err);
+    }
+  }
+
+  try {
+    const resp = await fetch(`https://api.duckduckgo.com/?q=${encodeURIComponent(tema)}&format=json&no_html=1&skip_disambig=1`);
+    const json = await resp.json();
+    if(json.AbstractText && json.AbstractText.trim().length>0){
+      lousaContent.textContent = json.AbstractText;
+      lousaSource.textContent = "Fonte: DuckDuckGo";
+    } else if(json.RelatedTopics && json.RelatedTopics.length>0){
+      let found = null;
+      for(const t of json.RelatedTopics){
+        if(t.Text){ found = t.Text; break; }
+        if(t.Topics && t.Topics.length){
+          const inner = t.Topics.find(x=>x.Text);
+          if(inner){ found = inner.Text; break; }
+        }
+      }
+      if(found){
+        lousaContent.textContent = found;
+        lousaSource.textContent = "Fonte: DuckDuckGo (Related)";
+      } else {
+        lousaContent.innerHTML = `Não encontrei resumo curto, mas você pode <a href="https://duckduckgo.com/?q=${temaQuery}" target="_blank">procurar aqui</a>.`;
+        lousaSource.textContent = "";
+      }
+    } else {
+      lousaContent.innerHTML = `Não encontrei resumo curto, mas você pode <a href="https://duckduckgo.com/?q=${temaQuery}" target="_blank">procurar aqui</a>.`;
+      lousaSource.textContent = "";
+    }
+  } catch(err){
+    lousaContent.textContent = "Erro ao buscar explicação (DuckDuckGo).";
+    lousaSource.textContent = "";
+    console.error(err);
+  }
+}
+
+buscarBtn.addEventListener('click', buscarTema);
+temaInput.addEventListener('keypress', (e)=>{ if(e.key==='Enter') buscarTema(); });
+temaInput.focus();
+</script>
+
+</body>
+</html>
